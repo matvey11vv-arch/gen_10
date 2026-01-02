@@ -1,0 +1,1065 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор молекулярной массы</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 10px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        input:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+        
+        .input-help {
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            background: #6a11cb;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: help;
+            z-index: 1;
+        }
+        
+        .help-text {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .input-help:hover + .help-text {
+            display: block;
+        }
+        
+        button {
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(106, 17, 203, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #6a11cb;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result.active {
+            display: block;
+        }
+        
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .mass-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .mass-label {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .mass-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #6a11cb;
+            line-height: 1;
+        }
+        
+        .mass-unit {
+            font-size: 1.2em;
+            color: #777;
+            margin-top: 5px;
+        }
+        
+        .examples {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .examples h4 {
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .example-item {
+            background: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .example-item:hover {
+            background: #6a11cb;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(106, 17, 203, 0.2);
+        }
+        
+        .example-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .example-formula {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .error {
+            color: #ff4757;
+            margin-top: 10px;
+            font-weight: 500;
+            display: none;
+            padding: 10px 15px;
+            background: #ffeaea;
+            border-radius: 8px;
+            border-left: 3px solid #ff4757;
+        }
+        
+        .error.active {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .details {
+            margin-top: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .details.active {
+            max-height: 500px;
+        }
+        
+        .details h4 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        
+        .elements-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .element-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #6a11cb;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .element-symbol {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .element-count {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .element-mass {
+            font-weight: 600;
+            color: #6a11cb;
+        }
+        
+        .toggle-details {
+            background: transparent;
+            color: #6a11cb;
+            border: 1px solid #6a11cb;
+            padding: 10px 20px;
+            margin-top: 15px;
+            width: auto;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .toggle-details:hover {
+            background: #6a11cb;
+            color: white;
+        }
+        
+        .history {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .history.active {
+            display: block;
+        }
+        
+        .history h4 {
+            color: #555;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .history-item:hover {
+            background: #e9ecef;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .clear-history {
+            background: transparent;
+            color: #ff4757;
+            border: 1px solid #ff4757;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .clear-history:hover {
+            background: #ff4757;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            input, button {
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            .elements-list {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .examples-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .mass-value {
+                font-size: 2em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-wrapper {
+                flex-direction: column;
+            }
+        }
+        
+        .formula-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6a11cb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Калькулятор молекулярной массы</h1>
+        
+        <div class="input-group">
+            <label for="formula">Химическая формула:</label>
+            <div class="input-wrapper">
+                <input type="text" id="formula" placeholder="Например: H₂O, C₆H₁₂O₆, NaCl..." autofocus>
+                <div class="input-help">?</div>
+                <div class="help-text">
+                    <strong>Формат ввода:</strong><br>
+                    • Заглавные и строчные буквы важны: CO ≠ Co<br>
+                    • Цифры обозначают количество атомов: H₂O<br>
+                    • Используйте скобки для групп: (NH₄)₂SO₄<br>
+                    • Поддерживаются десятичные числа: H₂O₁.₅<br>
+                    • Пустые поля означают 1 атом: NaCl
+                </div>
+            </div>
+            <div class="error" id="error"></div>
+            <div class="formula-info" id="formula-info"></div>
+        </div>
+        
+        <button id="calculate">Рассчитать молекулярную массу</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Выполняется расчет...</p>
+        </div>
+        
+        <div class="result" id="result">
+            <h3>📊 Результат расчета</h3>
+            <p>Химическая формула: <strong id="formula-display"></strong></p>
+            
+            <div class="mass-container">
+                <div class="mass-label">Молекулярная масса:</div>
+                <div class="mass-value" id="mass">0.00</div>
+                <div class="mass-unit">грамм на моль (г/моль)</div>
+            </div>
+            
+            <button class="toggle-details" id="toggle-details">
+                <span>📋 Показать детали расчета</span>
+            </button>
+            
+            <div class="details" id="details">
+                <h4>Состав молекулы:</h4>
+                <div class="elements-list" id="elements-list"></div>
+            </div>
+        </div>
+        
+        <div class="history" id="history">
+            <h4>
+                <span>📜 История расчетов</span>
+                <button class="clear-history" id="clear-history">Очистить</button>
+            </h4>
+            <div class="history-list" id="history-list"></div>
+        </div>
+        
+        <div class="examples">
+            <h4>🧪 Примеры химических формул:</h4>
+            <div class="examples-grid" id="examples-grid">
+                <!-- Примеры будут добавлены через JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Расширенная база данных атомных масс (г/моль) - IUPAC 2021
+        const atomicMasses = {
+            'H': 1.008, 'He': 4.0026, 'Li': 6.94, 'Be': 9.0122, 'B': 10.81,
+            'C': 12.011, 'N': 14.007, 'O': 15.999, 'F': 18.998, 'Ne': 20.180,
+            'Na': 22.990, 'Mg': 24.305, 'Al': 26.982, 'Si': 28.085, 'P': 30.974,
+            'S': 32.06, 'Cl': 35.45, 'Ar': 39.95, 'K': 39.098, 'Ca': 40.078,
+            'Sc': 44.956, 'Ti': 47.867, 'V': 50.942, 'Cr': 51.996, 'Mn': 54.938,
+            'Fe': 55.845, 'Co': 58.933, 'Ni': 58.693, 'Cu': 63.546, 'Zn': 65.38,
+            'Ga': 69.723, 'Ge': 72.630, 'As': 74.922, 'Se': 78.971, 'Br': 79.904,
+            'Kr': 83.798, 'Rb': 85.468, 'Sr': 87.62, 'Y': 88.906, 'Zr': 91.224,
+            'Nb': 92.906, 'Mo': 95.95, 'Tc': 98.0, 'Ru': 101.07, 'Rh': 102.91,
+            'Pd': 106.42, 'Ag': 107.87, 'Cd': 112.41, 'In': 114.82, 'Sn': 118.71,
+            'Sb': 121.76, 'Te': 127.60, 'I': 126.90, 'Xe': 131.29, 'Cs': 132.91,
+            'Ba': 137.33, 'La': 138.91, 'Ce': 140.12, 'Pr': 140.91, 'Nd': 144.24,
+            'Pm': 145.0, 'Sm': 150.36, 'Eu': 151.96, 'Gd': 157.25, 'Tb': 158.93,
+            'Dy': 162.50, 'Ho': 164.93, 'Er': 167.26, 'Tm': 168.93, 'Yb': 173.05,
+            'Lu': 174.97, 'Hf': 178.49, 'Ta': 180.95, 'W': 183.84, 'Re': 186.21,
+            'Os': 190.23, 'Ir': 192.22, 'Pt': 195.08, 'Au': 196.97, 'Hg': 200.59,
+            'Tl': 204.38, 'Pb': 207.2, 'Bi': 208.98, 'Po': 209.0, 'At': 210.0,
+            'Rn': 222.0, 'Fr': 223.0, 'Ra': 226.0, 'Ac': 227.0, 'Th': 232.04,
+            'Pa': 231.04, 'U': 238.03, 'Np': 237.0, 'Pu': 244.0, 'Am': 243.0
+        };
+
+        // Примеры химических формул
+        const examples = [
+            {formula: 'H2O', name: 'Вода'},
+            {formula: 'CO2', name: 'Углекислый газ'},
+            {formula: 'CH4', name: 'Метан'},
+            {formula: 'C6H12O6', name: 'Глюкоза'},
+            {formula: 'NaCl', name: 'Поваренная соль'},
+            {formula: 'H2SO4', name: 'Серная кислота'},
+            {formula: 'CaCO3', name: 'Карбонат кальция'},
+            {formula: '(NH4)2SO4', name: 'Сульфат аммония'},
+            {formula: 'C2H5OH', name: 'Этанол'},
+            {formula: 'CH3COOH', name: 'Уксусная кислота'},
+            {formula: 'C12H22O11', name: 'Сахароза'},
+            {formula: 'Fe2O3', name: 'Оксид железа(III)'},
+            {formula: 'Al2O3', name: 'Оксид алюминия'},
+            {formula: 'NaOH', name: 'Гидроксид натрия'},
+            {formula: 'HCl', name: 'Соляная кислота'},
+            {formula: 'NH3', name: 'Аммиак'}
+        ];
+
+        // Преобразование индексов (₀₁₂₃₄₅₆₇₈₉) в обычные числа
+        function normalizeFormula(formula) {
+            const subscriptMap = {
+                '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4',
+                '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
+                '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
+                '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'
+            };
+            
+            return formula.split('').map(char => subscriptMap[char] || char).join('');
+        }
+
+        // Преобразование обычных чисел в нижние индексы
+        function formatSubscripts(formula) {
+            const subscriptMap = {
+                '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+                '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'
+            };
+            
+            return formula.replace(/(\d+(?:\.\d+)?)/g, (match) => {
+                return match.split('').map(d => subscriptMap[d] || d).join('');
+            });
+        }
+
+        // Парсинг химической формулы (улучшенная версия)
+        function parseFormula(formula) {
+            formula = normalizeFormula(formula);
+            
+            // Удаляем все пробелы
+            formula = formula.replace(/\s+/g, '');
+            
+            // Проверка на пустую строку
+            if (!formula) return null;
+            
+            // Проверка допустимых символов
+            if (!/^[A-Za-z0-9().\[\]]+$/.test(formula)) {
+                return null;
+            }
+            
+            const elements = {};
+            const stack = [{}];
+            let i = 0;
+            
+            while (i < formula.length) {
+                const char = formula[i];
+                
+                // Открывающая скобка
+                if (char === '(' || char === '[') {
+                    stack.push({});
+                    i++;
+                }
+                // Закрывающая скобка
+                else if (char === ')' || char === ']') {
+                    const group = stack.pop();
+                    i++;
+                    
+                    // Чтение множителя после скобки
+                    let multiplier = '';
+                    while (i < formula.length && /[\d.]/.test(formula[i])) {
+                        multiplier += formula[i];
+                        i++;
+                    }
+                    const mult = multiplier ? parseFloat(multiplier) : 1;
+                    
+                    // Добавление элементов группы в текущий контекст
+                    const current = stack[stack.length - 1];
+                    for (const [element, count] of Object.entries(group)) {
+                        current[element] = (current[element] || 0) + count * mult;
+                    }
+                }
+                // Элемент (заглавная буква)
+                else if (/[A-Z]/.test(char)) {
+                    let element = char;
+                    i++;
+                    
+                    // Проверка на вторую строчную букву
+                    if (i < formula.length && /[a-z]/.test(formula[i])) {
+                        element += formula[i];
+                        i++;
+                    }
+                    
+                    // Проверка существования элемента
+                    if (!atomicMasses[element]) {
+                        throw new Error(`Неизвестный химический элемент: ${element}`);
+                    }
+                    
+                    // Чтение числа атомов
+                    let countStr = '';
+                    while (i < formula.length && /[\d.]/.test(formula[i])) {
+                        countStr += formula[i];
+                        i++;
+                    }
+                    const count = countStr ? parseFloat(countStr) : 1;
+                    
+                    // Добавление элемента в текущий контекст
+                    const current = stack[stack.length - 1];
+                    current[element] = (current[element] || 0) + count;
+                }
+                // Недопустимый символ
+                else {
+                    return null;
+                }
+            }
+            
+            // Проверка на непарные скобки
+            if (stack.length !== 1) {
+                return null;
+            }
+            
+            return stack[0];
+        }
+
+        // Расчет молекулярной массы
+        function calculateMolecularMass(formula) {
+            const elements = parseFormula(formula);
+            
+            if (!elements) {
+                throw new Error('Некорректный формат химической формулы');
+            }
+            
+            let totalMass = 0;
+            const elementDetails = [];
+            
+            for (const [element, count] of Object.entries(elements)) {
+                const atomicMass = atomicMasses[element];
+                const elementMass = atomicMass * count;
+                totalMass += elementMass;
+                
+                elementDetails.push({
+                    symbol: element,
+                    count: count,
+                    atomicMass: atomicMass,
+                    totalMass: elementMass,
+                    percentage: 0 // Будет вычислено позже
+                });
+            }
+            
+            // Вычисление процентного содержания
+            elementDetails.forEach(item => {
+                item.percentage = (item.totalMass / totalMass * 100);
+            });
+            
+            // Сортировка по символу элемента
+            elementDetails.sort((a, b) => a.symbol.localeCompare(b.symbol));
+            
+            return {
+                totalMass: totalMass,
+                elements: elementDetails,
+                composition: elements
+            };
+        }
+
+        // История расчетов
+        class CalculationHistory {
+            constructor() {
+                this.key = 'molecular_mass_history';
+                this.maxItems = 10;
+                this.load();
+            }
+            
+            load() {
+                try {
+                    const data = localStorage.getItem(this.key);
+                    this.items = data ? JSON.parse(data) : [];
+                } catch (e) {
+                    this.items = [];
+                }
+            }
+            
+            save() {
+                try {
+                    localStorage.setItem(this.key, JSON.stringify(this.items));
+                } catch (e) {
+                    console.error('Не удалось сохранить историю:', e);
+                }
+            }
+            
+            add(formula, result) {
+                // Удаляем дубликаты
+                this.items = this.items.filter(item => item.formula !== formula);
+                
+                // Добавляем новый элемент в начало
+                this.items.unshift({
+                    formula: formula,
+                    mass: result.totalMass.toFixed(4),
+                    timestamp: new Date().toISOString(),
+                    date: new Date().toLocaleString('ru-RU')
+                });
+                
+                // Ограничиваем размер истории
+                if (this.items.length > this.maxItems) {
+                    this.items = this.items.slice(0, this.maxItems);
+                }
+                
+                this.save();
+            }
+            
+            clear() {
+                this.items = [];
+                this.save();
+            }
+            
+            getAll() {
+                return this.items;
+            }
+        }
+
+        // DOM элементы
+        const formulaInput = document.getElementById('formula');
+        const calculateBtn = document.getElementById('calculate');
+        const resultDiv = document.getElementById('result');
+        const formulaDisplay = document.getElementById('formula-display');
+        const massDisplay = document.getElementById('mass');
+        const errorDisplay = document.getElementById('error');
+        const detailsDiv = document.getElementById('details');
+        const elementsList = document.getElementById('elements-list');
+        const toggleDetailsBtn = document.getElementById('toggle-details');
+        const loadingDiv = document.getElementById('loading');
+        const historyDiv = document.getElementById('history');
+        const historyList = document.getElementById('history-list');
+        const clearHistoryBtn = document.getElementById('clear-history');
+        const formulaInfo = document.getElementById('formula-info');
+        const examplesGrid = document.getElementById('examples-grid');
+
+        // Инициализация истории
+        const history = new CalculationHistory();
+
+        // Инициализация примеров
+        function initExamples() {
+            examples.forEach(example => {
+                const exampleDiv = document.createElement('div');
+                exampleDiv.className = 'example-item';
+                exampleDiv.innerHTML = `
+                    <div class="example-name">${example.name}</div>
+                    <div class="example-formula">${formatSubscripts(example.formula)}</div>
+                `;
+                exampleDiv.addEventListener('click', () => {
+                    setExample(example.formula);
+                });
+                examplesGrid.appendChild(exampleDiv);
+            });
+        }
+
+        // Отображение истории
+        function displayHistory() {
+            const items = history.getAll();
+            
+            if (items.length === 0) {
+                historyDiv.classList.remove('active');
+                return;
+            }
+            
+            historyDiv.classList.add('active');
+            historyList.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div>
+                        <strong>${formatSubscripts(item.formula)}</strong>
+                        <div style="font-size: 0.8em; color: #666;">${item.date}</div>
+                    </div>
+                    <div style="font-weight: bold; color: #6a11cb;">${item.mass} г/моль</div>
+                `;
+                
+                historyItem.addEventListener('click', () => {
+                    setExample(item.formula);
+                });
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        // Обработчик клика по кнопке расчета
+        calculateBtn.addEventListener('click', async () => {
+            const formula = formulaInput.value.trim();
+            
+            // Сброс предыдущих результатов
+            resultDiv.classList.remove('active');
+            errorDisplay.classList.remove('active');
+            detailsDiv.classList.remove('active');
+            toggleDetailsBtn.querySelector('span').textContent = '📋 Показать детали расчета';
+            
+            if (!formula) {
+                showError('Введите химическую формулу');
+                return;
+            }
+            
+            // Показываем индикатор загрузки
+            loadingDiv.classList.add('active');
+            
+            // Имитация загрузки для лучшего UX
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            try {
+                const result = calculateMolecularMass(formula);
+                const formattedFormula = formatSubscripts(formula);
+                
+                // Отображение результатов
+                formulaDisplay.textContent = formattedFormula;
+                massDisplay.textContent = result.totalMass.toFixed(4);
+                resultDiv.classList.add('active');
+                
+                // Отображение деталей состава
+                displayElementDetails(result.elements);
+                
+                // Добавление в историю
+                history.add(formula, result);
+                displayHistory();
+                
+                // Анимация
+                massDisplay.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    massDisplay.style.transform = 'scale(1)';
+                }, 150);
+                
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                loadingDiv.classList.remove('active');
+            }
+        });
+
+        // Отображение деталей состава молекулы
+        function displayElementDetails(elements) {
+            elementsList.innerHTML = '';
+            
+            elements.forEach(element => {
+                const elementDiv = document.createElement('div');
+                elementDiv.className = 'element-item';
+                elementDiv.innerHTML = `
+                    <div>
+                        <span class="element-symbol">${element.symbol}</span>
+                        <span class="element-count"> × ${element.count}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="element-mass">${element.totalMass.toFixed(2)} г/моль</div>
+                        <div style="font-size: 0.85em; color: #666;">${element.percentage.toFixed(2)}%</div>
+                    </div>
+                `;
+                elementsList.appendChild(elementDiv);
+            });
+        }
+
+        // Обработка нажатия Enter в поле ввода
+        formulaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                calculateBtn.click();
+            }
+        });
+
+        // Динамическая проверка формулы при вводе
+        formulaInput.addEventListener('input', () => {
+            const formula = formulaInput.value.trim();
+            
+            errorDisplay.classList.remove('active');
+            formulaInfo.textContent = '';
+            
+            if (formula) {
+                try {
+                    // Быстрая проверка без полного расчета
+                    const normalized = normalizeFormula(formula);
+                    if (!/^[A-Z][a-z]?$/.test(normalized[0])) {
+                        throw new Error('Формула должна начинаться с заглавной буквы элемента');
+                    }
+                    
+                    // Подсчет элементов для информации
+                    const tempResult = parseFormula(formula);
+                    if (tempResult) {
+                        const elementCount = Object.keys(tempResult).length;
+                        formulaInfo.textContent = `Содержит ${elementCount} элемент${elementCount === 1 ? '' : (elementCount > 4 ? 'ов' : 'а')}`;
+                    }
+                } catch (e) {
+                    // Игнорируем ошибки при вводе
+                }
+            }
+        });
+
+        // Переключение отображения деталей расчета
+        toggleDetailsBtn.addEventListener('click', () => {
+            detailsDiv.classList.toggle('active');
+            const span = toggleDetailsBtn.querySelector('span');
+            span.textContent = detailsDiv.classList.contains('active') 
+                ? '📋 Скрыть детали расчета' 
+                : '📋 Показать детали расчета';
+        });
+
+        // Функция для отображения ошибки
+        function showError(message) {
+            errorDisplay.textContent = message;
+            errorDisplay.classList.add('active');
+            
+            // Анимация ошибки
+            formulaInput.style.borderColor = '#ff4757';
+            formulaInput.style.boxShadow = '0 0 0 3px rgba(255, 71, 87, 0.1)';
+            
+            setTimeout(() => {
+                if (errorDisplay.classList.contains('active')) {
+                    formulaInput.style.borderColor = '';
+                    formulaInput.style.boxShadow = '';
+                }
+            }, 3000);
+        }
+
+        // Функция для подстановки примера
+        function setExample(formula) {
+            formulaInput.value = formula;
+            formulaInput.focus();
+            
+            // Показываем информацию о формуле
+            formulaInput.dispatchEvent(new Event('input'));
+            
+            // Автоматический расчет через небольшую задержку
+            setTimeout(() => {
+                calculateBtn.click();
+            }, 500);
+        }
+
+        // Очистка истории
+        clearHistoryBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Очистить всю историю расчетов?')) {
+                history.clear();
+                displayHistory();
+            }
+        });
+
+        // Инициализация при загрузке страницы
+        window.addEventListener('DOMContentLoaded', () => {
+            initExamples();
+            displayHistory();
+            
+            // Автофокус на поле ввода
+            formulaInput.focus();
+            
+            // Загрузка последнего расчета (если есть)
+            const lastCalculation = history.getAll()[0];
+            if (lastCalculation) {
+                formulaInput.value = lastCalculation.formula;
+                formulaInput.dispatchEvent(new Event('input'));
+            }
+            
+            // Добавляем информацию о поддержке
+            console.log('Калькулятор молекулярной массы загружен. Поддерживается более 90 химических элементов.');
+        });
+
+        // Сохранение состояния при закрытии страницы
+        window.addEventListener('beforeunload', () => {
+            const formula = formulaInput.value.trim();
+            if (formula) {
+                try {
+                    localStorage.setItem('last_formula', formula);
+                } catch (e) {
+                    // Игнорируем ошибки localStorage
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+
+
+
+
